@@ -84,6 +84,7 @@ private:
                    const geometry_msgs::Point& frontier_goal);
 
   bool goalOnBlacklist(const geometry_msgs::Point& goal);
+  bool stop_exploration;
 
   ros::NodeHandle private_nh_;
   ros::NodeHandle relative_nh_;
@@ -99,6 +100,7 @@ private:
 
   std::vector<geometry_msgs::Point> frontier_blacklist_;
   geometry_msgs::Point prev_goal_;
+  geometry_msgs::Point home_position;
   double prev_distance_;
   ros::Time last_progress_;
   size_t last_markers_count_;

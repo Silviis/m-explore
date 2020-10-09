@@ -60,6 +60,11 @@ Explore::Explore()
 {
   double timeout;
   double min_frontier_size;
+  stop_exploration = false;
+  home_position.x = 0.0;
+  home_position.y = 0.0;
+  home_position.z = 0.0;
+
   private_nh_.param("planner_frequency", planner_frequency_, 1.0);
   private_nh_.param("progress_timeout", timeout, 30.0);
   progress_timeout_ = ros::Duration(timeout);
@@ -187,10 +192,7 @@ void Explore::makePlan()
     ROS_DEBUG("frontier %zd cost: %f", i, frontiers[i].cost);
   }
 
-  if (frontiers.empty()) {
-    stop();
-    return;
-  }
+
 
   // publish frontiers as visualization markers
   if (visualize_) {
@@ -203,12 +205,15 @@ void Explore::makePlan()
                        [this](const frontier_exploration::Frontier& f) {
                          return goalOnBlacklist(f.centroid);
                        });
-  if (frontier == frontiers.end()) {
-    stop();
+
+  geometry_msgs::Point target_position = frontier->centroid;
+  
+  if ((frontiers.empty() | (frontier == frontiers.end())) & stop_exploration == false){
+    stop_exploration = true;
+    target_position = home_position;
+    ROS_INFO("Set stop_exploration to false");
     return;
   }
-  geometry_msgs::Point target_position = frontier->centroid;
-
   // time out if we are not making any progress
   bool same_goal = prev_goal_ == target_position;
   prev_goal_ = target_position;
@@ -270,7 +275,11 @@ void Explore::reachedGoal(const actionlib::SimpleClientGoalState& status,
     frontier_blacklist_.push_back(frontier_goal);
     ROS_DEBUG("Adding current goal to black list");
   }
-
+  if (stop_exploration == true){
+    ROS_INFO("Stop explore");
+    stop();
+    return;
+  }
   // find new goal immediatelly regardless of planning frequency.
   // execute via timer to prevent dead lock in move_base_client (this is
   // callback for sendGoal, which is called in makePlan). the timer must live
