@@ -39,6 +39,7 @@
 
 #include <thread>
 
+
 inline static bool operator==(const geometry_msgs::Point& one,
                               const geometry_msgs::Point& two)
 {
@@ -188,7 +189,7 @@ void Explore::makePlan()
   }
 
   if (frontiers.empty()) {
-    stop();
+    returnHome();
     return;
   }
 
@@ -204,7 +205,7 @@ void Explore::makePlan()
                          return goalOnBlacklist(f.centroid);
                        });
   if (frontier == frontiers.end()) {
-    stop();
+    returnHome();
     return;
   }
   geometry_msgs::Point target_position = frontier->centroid;
@@ -292,8 +293,22 @@ void Explore::stop()
   ROS_INFO("Exploration stopped.");
 }
 
-}  // namespace explore
+void Explore::returnHome()
+{
+  ROS_INFO("Returning home!");
+  ros::ServiceClient client = private_nh_.serviceClient<ros_wt::ReturnToHome>("return_to_home");
+  ros_wt::ReturnToHome srv;
+  srv.request.return_home = true;
 
+  if(client.call(srv)) {
+    ROS_INFO("Returned to home :)!");
+  }
+  stop();
+}
+
+
+  // namespace explore
+}
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "explore");

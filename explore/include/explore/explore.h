@@ -50,6 +50,8 @@
 
 #include <explore/costmap_client.h>
 #include <explore/frontier_search.h>
+#include <ros_wt/ReturnToHome.h>
+
 
 namespace explore
 {
@@ -66,6 +68,7 @@ public:
 
   void start();
   void stop();
+  void returnHome();
 
 private:
   /**
