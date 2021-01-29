@@ -90,6 +90,8 @@ private:
 
   ros::NodeHandle private_nh_;
   ros::NodeHandle relative_nh_;
+  ros::NodeHandle service_nh;
+
   ros::Publisher marker_array_publisher_;
   tf::TransformListener tf_listener_;
 

@@ -296,10 +296,9 @@ void Explore::stop()
 void Explore::returnHome()
 {
   ROS_INFO("Returning home!");
-  ros::ServiceClient client = private_nh_.serviceClient<ros_wt::ReturnToHome>("return_to_home");
+  ros::ServiceClient client = service_nh.serviceClient<ros_wt::ReturnToHome>("return_to_home");
   ros_wt::ReturnToHome srv;
   srv.request.return_home = true;
-
   if(client.call(srv)) {
     ROS_INFO("Returned to home :)!");
   }
