@@ -296,11 +296,17 @@ void Explore::stop()
 void Explore::returnHome()
 {
   ROS_INFO("Returning home!");
-  ros::ServiceClient client = service_nh.serviceClient<ros_wt::ReturnToHome>("return_to_home");
-  ros_wt::ReturnToHome srv;
-  srv.request.return_home = true;
+  ros::ServiceClient client = service_nh.serviceClient<std_srvs::Trigger>("return_to_home");
+  std_srvs::Trigger srv;
+  
   if(client.call(srv)) {
-    ROS_INFO("Returned to home :)!");
+    if(srv.response.success){
+      ROS_INFO("Returned to home :)!");
+    }
+  }
+  else
+  {
+    ROS_ERROR("Failed to call service return_to_home");
   }
   stop();
 }

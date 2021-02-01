@@ -50,7 +50,7 @@
 
 #include <explore/costmap_client.h>
 #include <explore/frontier_search.h>
-#include <ros_wt/ReturnToHome.h>
+#include <std_srvs/Trigger.h>
 
 
 namespace explore
