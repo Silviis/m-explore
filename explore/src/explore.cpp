@@ -59,6 +59,7 @@ Explore::Explore()
   , prev_distance_(0)
   , last_markers_count_(0)
 {
+  return_state = false;
   double timeout;
   double min_frontier_size;
   private_nh_.param("planner_frequency", planner_frequency_, 1.0);
@@ -295,20 +296,25 @@ void Explore::stop()
 
 void Explore::returnHome()
 {
-  ROS_INFO("Returning home!");
-  ros::ServiceClient client = service_nh.serviceClient<std_srvs::Trigger>("return_to_home");
-  std_srvs::Trigger srv;
-  
-  if(client.call(srv)) {
-    if(srv.response.success){
-      ROS_INFO("Returned to home :)!");
-    }
-  }
-  else
+  if (return_state == false)
   {
-    ROS_ERROR("Failed to call service return_to_home");
+    ROS_INFO("Returning home!");
+    ros::ServiceClient client = service_nh.serviceClient<std_srvs::Trigger>("return_to_home");
+    std_srvs::Trigger srv;
+
+    if(client.call(srv)) {
+      if(srv.response.success){
+        ROS_INFO("Returned to home! :)");
+        return_state = true;
+      }
+    }
+    else
+    {
+      ROS_ERROR("Failed to call service return_to_home");
+    }
+    stop(); 
   }
-  stop();
+
 }
 
 

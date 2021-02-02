@@ -69,6 +69,7 @@ public:
   void start();
   void stop();
   void returnHome();
+  bool return_state;
 
 private:
   /**
